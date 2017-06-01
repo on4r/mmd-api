@@ -1,7 +1,7 @@
 my-movie-db [ Backend ]
 =======================
 
-This is the node.js API Backend for [my-movie-db](kael.kaus.uberspace.de/my-movie-db/app/).
+This is the node.js API Backend for [my-movie-db](http://kael.kaus.uberspace.de/my-movie-db/app/).
 
 Setup
 -----
