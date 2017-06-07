@@ -1,4 +1,6 @@
-require("env2")(".env");
+                  require("env2")(".env");
+var mongoose    = require("mongoose");
+var request     = require("request");
 var express     = require("express");
 var bodyParser  = require("body-parser");
 var path        = require("path");
@@ -7,13 +9,15 @@ var router      = express.Router();
 
 api.set("port", (process.env.PORT || 61008));
 
+//---
 // MongoDB
-var mongoose    = require("mongoose");
+//---
+
 mongoose.connect( "mongodb://" + process.env.MONGO_DB_CONNECTION_STR, function (err, res) {
   if (err) {
-    console.log ('ERROR connecting to: ' + process.env.MONGO_DB_CONNECTION_STR + '. ' + err);
+    console.log ("Connecting to MongoDB... FAILED! Error Code:\n" + err);
   } else {
-    console.log ('Succeeded connected to: ' + process.env.MONGO_DB_CONNECTION_STR);
+    console.log ("Connecting to MongoDB... SUCCESS.");
   }
 });
 
@@ -31,19 +35,34 @@ api.use(function(req, res, next) {
   next();
 });
 
-// routes middelware
+//---
+//  Router Middelware
+//---
+
 router.use(function(req, res, next) {
   console.log("New " + req.method + " request on route: " + req.originalUrl);
   next();
 });
 
-// routes
+//---
+//  Routes
+//---
+
+// Send API Request to TMDB via node server to hide API-Key in frontend app
+router.get("/search/:string", function(req, res) {
+  var response = res;
+  var requestURL = "https://api.themoviedb.org/3/search/movie/?query=" +
+                    req.params.string + "&language=de&api_key=" +
+                    process.env.TMDB_API_KEY;
+  request(requestURL, function(err, res, body) {
+    response.send(body);
+  });
+});
+
 router.get("/movies/watched", function(req, res) {
 
   Movie.find({ list_id : 0 }, function(err, movies) {
-    if (err)
-      res.send(err);
-
+    if (err) res.send(err);
     res.json(movies);
   });
 
@@ -52,9 +71,7 @@ router.get("/movies/watched", function(req, res) {
 router.get("/movies/plan-to-watch", function(req, res) {
 
   Movie.find({ list_id : 1 }, function(err, movies) {
-    if (err)
-      res.send(err);
-
+    if (err) res.send(err);
     res.json(movies);
   });
 
@@ -164,5 +181,5 @@ router.route("/movies/:movie_id")
 api.use("/", router);
 
 api.listen(api.get("port"), function() {
-  console.log("API-Server started. Listening on Port " + api.get("port"));
+  console.log("API-Server started.\nListening on Port:" + api.get("port"));
 });
