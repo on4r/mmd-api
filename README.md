@@ -1,22 +1,19 @@
-my-movie-db [ Backend ]
-=======================
+# my-movie-db [ Backend ]
 
-This is the node.js API Backend for [my-movie-db](kael.kaus.uberspace.de/my-movie-db/app/).
+This is the node.js API Backend for [my-movie-db](http://kael.kaus.uberspace.de/my-movie-db/app/).
 
-Setup
------
+## Setup
 
 **MongoDB**
 Install [mongoDB](https://www.mongodb.com/download-center#community).
 
 **Environment Variables**
 The server expectes a `.env` file in the root directory ([env2](https://github.com/dwyl/env2)).
+With the following variables defined:
 
-    PORT=xxxx
-    MONGO_DB_CONNECTION_STR=localhost:27017/movies
-
-> `MONGO_DB_CONNECTION_STR` expects the part after `mongodb://`.
-See [moongoose Documentation](http://mongoosejs.com/docs/connections.html) for more info.
+* `PORT` defines the port on which your frontend will access the API.
+* `MONGO_DB_CONNECTION_STR` expects the part after `mongodb://`. See [moongoose documentation](http://mongoosejs.com/docs/connections.html) for more info.
+* `TMDB_API_KEY` a API-Key from [themoviedb.org](https://www.themoviedb.org/documentation/api)
 
 **Install Dependencies**
 
@@ -29,7 +26,6 @@ See [moongoose Documentation](http://mongoosejs.com/docs/connections.html) for m
 Served to `localhost:61008` if you didn't specify another port in `.env`.
 
 **API Endpoints**
-
 
     GET     /movies                 // return all movies
     POST    /movies                 // add new movie
