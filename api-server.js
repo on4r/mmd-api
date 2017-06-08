@@ -1,4 +1,4 @@
-                  require("env2")(".env");
+                  require("./env");
 var mongoose    = require("mongoose");
 var request     = require("request");
 var express     = require("express");
