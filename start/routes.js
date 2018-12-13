@@ -17,10 +17,16 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
+  return { greeting: 'mmd-api' }
 })
 
 Route.group(() => {
   Route.post('auth/register', 'UserController.register')
   Route.post('auth/login', 'UserController.login')
+
+  Route.get('movies/watched', 'MovieController.watched').middleware('auth')
+  Route.get('movies/plan-to-watch', 'MovieController.planToWatch').middleware('auth')
+  Route.post('movies', 'MovieController.create').middleware('auth')
+  Route.patch('movies/:id', 'MovieController.update').middleware('auth')
+  Route.delete('movies/:id', 'MovieController.destroy').middleware('auth')
 }).prefix('api');
