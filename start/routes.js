@@ -29,4 +29,6 @@ Route.group(() => {
   Route.post('movies', 'MovieController.create').middleware('auth')
   Route.patch('movies/:id', 'MovieController.update').middleware('auth')
   Route.delete('movies/:id', 'MovieController.destroy').middleware('auth')
+
+  Route.get('search/:query', 'SearchController.search')
 }).prefix('api');
