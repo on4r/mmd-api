@@ -1,23 +1,55 @@
 'use strict'
 
 const Movie = use('App/Models/Movie')
+const TmdbAPI = use('App/Services/TmdbApiService')
 
 class MovieController {
+
   async watched({ auth }) {
+
     const user = await auth.getUser()
     return await user.movies().where({ watched: true }).fetch()
+
   }
 
   async planToWatch({ auth }) {
+
     const user = await auth.getUser()
     return await user.movies().where({ watched: false }).fetch()
+
   }
 
-  async create({ auth, request }) {
+  async create({ auth, request, response }) {
+
     const user = await auth.getUser()
+    const { id, watched, rating, comment } = request.all()
+
+    // Is movie already in any list?
+    let movieInList = await user.movies().where({ tmdb_id: id }).fetch()
+    movieInList = movieInList.toJSON()[0]
+
+    if (movieInList) {
+
+      if (movieInList.watched) {
+        return response.status(500).send({
+          'message': `You already watched »${movieInList.title}«`
+        })
+      } else {
+        if (watched) {
+          return response.status(500).send({
+            'message': `Use the "Plan to Watch" list to mark »${movieInList.title}« as watched`
+          })
+        } else {
+          return response.status(500).send({
+            'message': `You already planned to watch »${movieInList.title}«`
+          })
+        }
+      }
+
+    }
+
     const movie = new Movie()
     const {
-      tmdb_id,
       imdb_id,
       title,
       original_title,
@@ -26,14 +58,11 @@ class MovieController {
       release_date,
       poster_path,
       backdrop_path,
-      genres,
-      watched = false,
-      rating,
-      comment
-    } = request.all()
+      genres
+    } = JSON.parse(await TmdbAPI.getMovieDetails(id))
 
     movie.fill({
-      tmdb_id,
+      tmdb_id: id,
       imdb_id,
       title,
       original_title,
@@ -49,38 +78,41 @@ class MovieController {
     })
 
     await user.movies().save(movie)
-
     return movie
+
   }
 
   async update({ auth, request, response, params }) {
+
     const user = await auth.getUser()
     const movie = await Movie.find(params.id)
-    const { watched } = request.all()
+    const { watched, rating, comment } = request.all()
 
     if (user.id !== movie.user_id) {
       return response.status(403).send({ 'error': 'Permission denied'})
     }
 
-    if (watched === undefined || typeof watched !== 'boolean') {
-      return response.status(422).send({ 'error': 'Missing or wrong argument'})
-    }
+    movie.merge({ watched, rating, comment })
 
-    movie.merge({ watched })
     await movie.save()
-
     return movie
+
   }
 
   async destroy({ auth, request, response, params }) {
+
     const user = await auth.getUser()
     const movie = await Movie.find(params.id)
+
     if (user.id !== movie.user_id) {
       return response.status(403).send({ 'error': 'Permission denied'})
     }
+
     await movie.delete()
     return movie
+
   }
+
 }
 
 module.exports = MovieController

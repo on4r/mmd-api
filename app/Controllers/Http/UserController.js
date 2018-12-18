@@ -13,9 +13,17 @@ class UserController {
 
   }
 
-  async register({ request }) {
+  async register({ request, response }) {
 
     const { email, password } = request.all()
+    const userWithSameEmail = await User.findBy('email', email)
+
+    if (userWithSameEmail) {
+      return response.status(400).send({
+        field: 'email',
+        message: 'This e-mail is allready in use.'
+      })
+    }
 
     await User.create({
       email,
