@@ -59,7 +59,7 @@ class MovieController {
       poster_path,
       backdrop_path,
       genres
-    } = JSON.parse(await TmdbAPI.getMovieDetails(id))
+    } = await TmdbAPI.getMovieDetails(id)
 
     movie.fill({
       tmdb_id: id,

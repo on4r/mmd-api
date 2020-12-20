@@ -11,7 +11,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       got(BASE_URL + `movie/${id}` + '?language=de' + `&api_key=${API_KEY}`)
         .then(response => {
-          resolve(response.body)
+            resolve(JSON.parse(response.body))
         })
         .catch(error => {
           reject(error)
