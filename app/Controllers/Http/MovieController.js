@@ -32,18 +32,18 @@ class MovieController {
     if (movieInList) {
 
       if (movieInList.watched) {
-        return response.status(500).send({
+        return response.status(400).send({
           'id': movieInList.id,
           'rewatch': true,
           'message': `You already watched »${movieInList.title}«`
         })
       } else {
         if (watched) {
-          return response.status(500).send({
+          return response.status(400).send({
             'message': `Use the "Plan to Watch" list to mark »${movieInList.title}« as watched`
           })
         } else {
-          return response.status(500).send({
+          return response.status(400).send({
             'message': `You already planned to watch »${movieInList.title}«`
           })
         }
