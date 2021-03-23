@@ -5,10 +5,11 @@ const TmdbAPI = use('App/Services/TmdbApiService')
 
 class MovieController {
 
-  async watched({ auth }) {
+  async watched({ auth, request, response }) {
 
     const user = await auth.getUser()
-    return await user.movies().where({ watched: true }).fetch()
+    const page = request.get().page || 1
+    return await user.movies().where({ watched: true }).orderBy('created_at', 'desc').paginate(page, 12)
 
   }
 
