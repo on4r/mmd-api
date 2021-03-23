@@ -33,6 +33,8 @@ class MovieController {
 
       if (movieInList.watched) {
         return response.status(500).send({
+          'id': movieInList.id,
+          'rewatch': true,
           'message': `You already watched »${movieInList.title}«`
         })
       } else {
